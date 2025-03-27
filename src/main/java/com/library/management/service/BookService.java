@@ -17,7 +17,6 @@ public class BookService {
 
     @Transactional
     public Book addBook(Book book) {
-        System.out.println("before :" +book);
         if (book.getBookId()!=null && bookRepository.existsById(book.getBookId())) {
             throw new DuplicateBooksException(book.getBookId());
         }
