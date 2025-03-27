@@ -4,6 +4,10 @@ import com.library.management.model.Book;
 import com.library.management.service.BookService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -31,13 +35,23 @@ public class BookController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<Book>> searchBooks(@RequestParam String query) {
-        return ResponseEntity.status(HttpStatus.OK).body(bookService.searchBooks(query));
+    public ResponseEntity<Page<Book>> searchBooks(
+            @RequestParam String query,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "title,asc") String[] sort) {
+        Pageable pageable = createPageable(page, size, sort);
+        return ResponseEntity.status(HttpStatus.OK).body(bookService.searchBooks(query,pageable));
     }
 
     @GetMapping
-    public ResponseEntity<List<Book>> getAllBooks() {
-        return ResponseEntity.status(HttpStatus.OK).body(bookService.getALlBooks());
+    public ResponseEntity<Page<Book>> getAllBooks(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "title,asc") String[] sort) {
+        Pageable pageable = createPageable(page, size, sort);
+        return ResponseEntity.status(HttpStatus.OK).
+                body(bookService.getALlBooks(pageable));
     }
 
     @PutMapping("/{bookId}")
@@ -64,6 +78,14 @@ public class BookController {
             errors.put(error.getField(), error.getDefaultMessage());
         }
         return errors;
+    }
+
+    private Pageable createPageable(int page, int size, String[] sort) {
+        String sortField = sort[0];
+        String direction = sort.length > 1 ? sort[1] : "asc";
+        Sort.Direction sortDirection = direction.equalsIgnoreCase("desc")
+                ? Sort.Direction.DESC : Sort.Direction.ASC;
+        return PageRequest.of(page, size, Sort.by(sortDirection, sortField));
     }
 
 }

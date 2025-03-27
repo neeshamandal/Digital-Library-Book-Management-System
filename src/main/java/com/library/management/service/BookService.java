@@ -5,6 +5,8 @@ import com.library.management.exceptions.DuplicateBooksException;
 import com.library.management.model.Book;
 import com.library.management.repo.BookRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,12 +25,14 @@ public class BookService {
         return bookRepository.save(book);
     }
 
-    public List<Book> searchBooks(String query){
-        return bookRepository.findByBookIdOrTitleIgnoreCase(query,query);
+    public Page<Book> searchBooks(String query,Pageable pageable){
+
+        return bookRepository.findByBookIdOrTitleIgnoreCase(query,query,pageable);
     }
 
-    public List<Book> getALlBooks(){
-        return bookRepository.findAll();
+    public Page<Book> getALlBooks(Pageable pageable){
+
+        return bookRepository.findAll(pageable);
     }
 
     @Transactional
