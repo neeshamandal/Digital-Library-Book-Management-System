@@ -12,7 +12,7 @@
 	<artifactId>library-management-system</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>library management system</name>
-	<description>Digital library management system with Spring Boot, MongoDB, Elasticsearch, Kafka and Redis</description>
+	<description>Digital library management system with Spring Boot, MongoDB</description>
 	<url/>
 	<licenses>
 		<license/>
@@ -64,7 +64,11 @@
 			<artifactId>commons-lang3</artifactId>
 			<version>3.12.0</version> <!-- You can use the latest version -->
 		</dependency>
-
+		<!-- Maven -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
@@ -92,6 +96,7 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>3.2.0</version>
 				<configuration>
 					<excludes>
 						<exclude>
@@ -99,6 +104,13 @@
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-clean-plugin</artifactId>
+				<configuration>
+					<failOnError>false</failOnError>
 				</configuration>
 			</plugin>
 		</plugins>

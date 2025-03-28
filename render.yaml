@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: library-app
+    plan: free
+    runtime: docker
+    dockerfilePath: Dockerfile
+    envVars:
+      - key: MONGO_URI
+        fromDatabase:
+          name: library-db
+          property: connectionString
+    healthCheckPath: /actuator/health
