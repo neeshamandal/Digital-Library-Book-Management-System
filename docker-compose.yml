@@ -1,19 +1,19 @@
 version: '3.8'
 
 services:
-  mongodb:
-    image: mongo:latest
-    container_name: mongodb
+  postgres:
+    image: postgres:latest
+    container_name: postgres
     ports:
-      - "27017:27017"
+      - "5432:5432"
     environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: password
-      MONGO_INITDB_DATABASE: library_db  # This creates the database automatically
+      POSTGRES_USER: admin         # Same as SPRING_DATASOURCE_USERNAME
+      POSTGRES_PASSWORD: password # Same as SPRING_DATASOURCE_PASSWORD
+      POSTGRES_DB: library_db     # Database name
     volumes:
-      - mongodb_data:/data/db
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: mongosh --eval "db.runCommand('ping').ok" -u admin -p password --quiet
+      test: ["CMD", "pg_isready", "-U", "admin"]   # Health check for PostgreSQL
       interval: 5s
       timeout: 30s
       retries: 3
@@ -24,10 +24,13 @@ services:
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATA_MONGODB_URI: mongodb://admin:password@mongodb:27017/library_db?authSource=admin&retryWrites=true&w=majority
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/library_db
+      SPRING_DATASOURCE_USERNAME: admin      # Same as POSTGRES_USER
+      SPRING_DATASOURCE_PASSWORD: password  # Same as POSTGRES_PASSWORD
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update # Database schema handling
     depends_on:
-      mongodb:
+      postgres:
         condition: service_healthy
 
 volumes:
-  mongodb_data:
+  postgres_data:

@@ -5,8 +5,16 @@ services:
     runtime: docker
     dockerfilePath: Dockerfile
     envVars:
-      - key: MONGO_URI
+      - key: SPRING_DATASOURCE_URL
         fromDatabase:
           name: library-db
-          property: connectionString
+          property: connectionString  # You need to ensure this points to the PostgreSQL connection string
+      - key: SPRING_DATASOURCE_USERNAME
+        fromDatabase:
+          name: library-db
+          property: username  # The username for PostgreSQL
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromDatabase:
+          name: library-db
+          property: password  # The password for PostgreSQL
     healthCheckPath: /actuator/health
