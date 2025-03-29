@@ -1,18 +1,21 @@
-FROM eclipse-temurin:17-jdk as builder
-WORKDIR /app
-COPY . .
-RUN chmod +x mvnw && \
-    ./mvnw clean package -DskipTests
+# Use Maven to build the application
+FROM maven:3.8.1-openjdk-17-slim AS builder
 
-FROM eclipse-temurin:17-jre
 WORKDIR /app
+COPY . /app
+
+# Run Maven to build the application
+RUN mvn clean package
+
+# Now copy the jar from the builder image
+FROM eclipse-temurin:17-jre
+
+WORKDIR /app
+
+# Copy the jar file from the builder image
 COPY --from=builder /app/target/*.jar app.jar
 
-# Explicit port exposure (required by Render)
+# Expose port
 EXPOSE 8080
-
-# Health check with timeout adjustment
-HEALTHCHECK --interval=30s --timeout=10s \
-  CMD curl -f http://localhost:8080/actuator/health || exit 1
 
 ENTRYPOINT ["java", "-jar", "app.jar"]
